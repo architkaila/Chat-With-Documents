@@ -1,0 +1,14 @@
+langchain==0.0.150
+pypdf==3.12.1 
+pandas==2.0.3
+matplotlib==3.7.2
+tiktoken==0.4.0
+textract==1.6.5
+transformers==4.30.2
+openai==0.27.8
+faiss-cpu==1.7.4
+pylint==2.17.4
+black==23.3.0
+ipykernel==6.24.0
+ipywidgets==8.0.7
+```
