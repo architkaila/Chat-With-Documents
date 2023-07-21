@@ -10,12 +10,12 @@ from langchain.chains import ConversationalRetrievalChain
 from html_templates import css, bot_template, user_template
 
 
-def extract_text(pdf_file):
+def extract_text(pdf_files):
     """
     Function to extract the text from a PDF file
 
     Args:
-        pdf_file (file): The PDF file to extract the text from
+        pdf_file (file): The PDF files to extract the text from
 
     Returns:
         text (str): The extracted text from the PDF file
@@ -24,12 +24,15 @@ def extract_text(pdf_file):
     # Initialize the raw text variable
     text = ""
 
-    # Read the PDF file
-    pdf_reader = PdfReader(pdf_file)
+    for pdf_file in pdf_files:
+        print("[INFO] Extracting text from {}".format(pdf_file.name))
 
-    # Extract the text from the PDF pages
-    for page in pdf_reader.pages:
-        text += page.extract_text()
+        # Read the PDF file
+        pdf_reader = PdfReader(pdf_file)
+
+        # Extract the text from the PDF pages
+        for page in pdf_reader.pages:
+            text += page.extract_text()
     
     return text
 
@@ -166,14 +169,14 @@ def run_UI():
         st.subheader("Document Uploader")
 
         # Document uploader
-        pdf_file = st.file_uploader("Upload a PDF you want to chat with", type="pdf", key="upload")
+        pdf_files = st.file_uploader("Upload a PDF you want to chat with", type="pdf", key="upload", accept_multiple_files=True)
 
         # Process the document
         if st.button("Start Chatting ✨"):
             # Add a progress spinner
             with st.spinner("Processing"):
                 # Convert the PDF to text
-                raw_text = extract_text(pdf_file)
+                raw_text = extract_text(pdf_files)
                 
                 # Get the chunks of text
                 chunks = get_chunks(raw_text)

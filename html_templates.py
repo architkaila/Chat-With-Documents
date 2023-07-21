@@ -37,7 +37,7 @@ bot_template = '''
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="https://raw.githubusercontent.com/architkaila/Chat-With-Documents/main/data/user.png">
+        <img src="https://raw.githubusercontent.com/architkaila/Chat-With-Documents/main/data/user.jpg">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>
