@@ -7,7 +7,7 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from html_templates import css, bot_template, user_template
+from html_chatbot_template import css, bot_template, user_template
 
 
 def extract_text(pdf_files):
@@ -24,13 +24,14 @@ def extract_text(pdf_files):
     # Initialize the raw text variable
     text = ""
 
+    # Iterate over the documents
     for pdf_file in pdf_files:
         print("[INFO] Extracting text from {}".format(pdf_file.name))
 
         # Read the PDF file
         pdf_reader = PdfReader(pdf_file)
 
-        # Extract the text from the PDF pages
+        # Extract the text from the PDF pages and add it to the raw text variable
         for page in pdf_reader.pages:
             text += page.extract_text()
     
@@ -49,10 +50,10 @@ def get_chunks(text):
 
     # Initialize the text splitter
     splitter = CharacterTextSplitter(
-        separator="\n",
-        chunk_size=1000,
-        chunk_overlap=200,
-        length_function=len
+        separator="\n", # Split the text by new line
+        chunk_size=1000, # Split the text into chunks of 1000 characters
+        chunk_overlap=200, # Overlap the chunks by 200 characters
+        length_function=len # Use the length function to get the length of the text
     )
 
     # Get the chunks of text
@@ -71,10 +72,11 @@ def get_vectorstore(chunks):
         vector_store (FAISS): The vector store for the chunks of text
     """
 
-    # Initialize the embeddings model
+    # Initialize the embeddings model to get the embeddings for the chunks of text
     embeddings = OpenAIEmbeddings()
 
-    # Create a vector store for the chunks of text
+    # Create a vector store for the chunks of text embeddings
+    # Can use any other online vector store (Elasticsearch, PineCone, etc.)
     vector_store = FAISS.from_texts(texts=chunks, embedding=embeddings)
 
     return vector_store
@@ -90,17 +92,19 @@ def get_conversation_chain(vector_store):
         conversation_chain (ConversationRetrievalChain): The conversation chain for the chat model
     """
     
-    # Initialize the chat model
+    # Initialize the chat model using Langchain OpenAi API
+    # Set the temperature and select the model to use
+    # Can replace this with any other chat model (Llama, Falcom, etc.)
     llm = ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0.1)
 
     # Initialize the chat memory
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-    # Create a conversation chain
+    # Create a conversation chain for the chat model
     conversation_chain = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vector_store.as_retriever(),
-        memory=memory,
+        llm=llm, # Chat model
+        retriever=vector_store.as_retriever(), # Vector store
+        memory=memory, # Chat memory
     )
 
     return conversation_chain
@@ -116,7 +120,7 @@ def generate_response(question):
         response (str): The response from the chat model
     """
 
-    # Get the response from the chat model
+    # Get the response from the chat model for the user query
     response = st.session_state.conversations({'question': question})
 
     # Update the chat history
@@ -126,9 +130,11 @@ def generate_response(question):
     for i, message in enumerate(st.session_state.chat_history):
         # Check if the message is from the user or the chatbot
         if i % 2 == 0:
+            # User message
             st.write(user_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
         else:
+            # Chatbot message
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
 
@@ -137,31 +143,38 @@ def generate_response(question):
 def run_UI():
     """
     The main UI function to display the UI for the webapp
+
+    Args:
+        None
+
+    Returns:
+        None
     """
 
-    # Load the environment variables
+    # Load the environment variables (API keys)
     load_dotenv()
 
     # Set the page tab title
-    st.set_page_config(page_title="Chat with PDFs", page_icon="🤖", layout="wide")
+    st.set_page_config(page_title="DocuMentor", page_icon="🤖", layout="wide")
 
-    # Add the custom CSS
+    # Add the custom CSS to the UI
     st.write(css, unsafe_allow_html=True)
 
-    # Initialize the session state variables
+    # Initialize the session state variables to store the conversations and chat history
     if "conversations" not in st.session_state:
         st.session_state.conversations = None
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
     # Set the page title
-    st.header("Chat with Clinical Study Documents")
+    st.header("DocuMentor: Conversations with Your Data")
 
-    # Input box for user query
+    # Input text box for user query
     user_question = st.text_input("How can I help you?")
 
-    # Generate the response if the user has entered a query
+    # Check if the user has entered a query/prompt
     if user_question:
+        # Call the function to generate the response
         generate_response(user_question)
 
     # Sidebar menu
@@ -169,13 +182,13 @@ def run_UI():
         st.subheader("Document Uploader")
 
         # Document uploader
-        pdf_files = st.file_uploader("Upload a PDF you want to chat with", type="pdf", key="upload", accept_multiple_files=True)
+        pdf_files = st.file_uploader("Upload a document you want to chat with", type="pdf", key="upload", accept_multiple_files=True)
 
-        # Process the document
+        # Process the document after the user clicks the button
         if st.button("Start Chatting ✨"):
             # Add a progress spinner
             with st.spinner("Processing"):
-                # Convert the PDF to text
+                # Convert the PDF to raw text
                 raw_text = extract_text(pdf_files)
                 
                 # Get the chunks of text
@@ -184,8 +197,10 @@ def run_UI():
                 # Create a vector store for the chunks of text
                 vector_store = get_vectorstore(chunks)
 
-                # Create a conversation chain
+                # Create a conversation chain for the chat model
                 st.session_state.conversations = get_conversation_chain(vector_store)
 
+# Application entry point
 if __name__ == "__main__":
+    # Run the UI
     run_UI()

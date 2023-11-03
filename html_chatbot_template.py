@@ -28,7 +28,7 @@ css = '''
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="https://raw.githubusercontent.com/architkaila/Chat-With-Documents/main/data/chatbot.png" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
+        <img src="https://raw.githubusercontent.com/architkaila/Chat-With-Documents/main/assets/chatbot.png" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
@@ -37,7 +37,7 @@ bot_template = '''
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="https://raw.githubusercontent.com/architkaila/Chat-With-Documents/main/data/user.jpg">
+        <img src="https://raw.githubusercontent.com/architkaila/Chat-With-Documents/main/assets/user.jpg">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>
