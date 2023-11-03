@@ -3,7 +3,7 @@
 &nbsp;
 
 ## Project Description ⭐  
-Imagine having a conversation with your own data, asking questions, and getting responses as if the document itself could understand and talk back to you. This app  `Chat-With-Documents`- helps build a seamless and intuitive way to extract knowledge from your documents.
+Imagine having a conversation with your own data, asking questions, and getting responses as if the document itself could understand and talk back to you. [`Chat-With-Documents`](https://chatwithdocuments.streamlit.app) helps build a seamless and intuitive way to extract knowledge from your documents.
 
 This project is an implementation of a `Retrieval Augmented Generation`(RAG) System. It leverages the power of Python, LangChain, and the GPT-3.5 Turbo model API from OpenAI to create an interactive chat experience with any PDF or document you have. 
 

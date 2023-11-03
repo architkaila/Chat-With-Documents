@@ -167,10 +167,10 @@ def run_UI():
         st.session_state.chat_history = None
 
     # Set the page title
-    st.header("DocuMentor: Conversations with Your Data")
+    st.header("DocuMentor: Conversations with Your Data 🤖")
 
     # Input text box for user query
-    user_question = st.text_input("How can I help you?")
+    user_question = st.text_input("Upload your data and ask me anything?")
 
     # Check if the user has entered a query/prompt
     if user_question:
